@@ -9,13 +9,18 @@ import (
 
 func main() {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/{$}", home)
-	mux.HandleFunc("/snippet/view/{id}", snippetView)
-	mux.HandleFunc("/snippet/create", snippetCreate)
+	mux.HandleFunc("GET /{$}", home)
+	mux.HandleFunc("GET /snippet/view/{id}", snippetView)
+	mux.HandleFunc("GET /snippet/create", snippetCreate)
+	mux.HandleFunc("POST /snippet/create", snippetCreatPost)
 
 	log.Print("starting server on :4000")
 	err := http.ListenAndServe(":4000", mux)
 	log.Fatal(err)
+}
+
+func snippetCreatPost(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Save a new snippet..."))
 }
 
 func snippetCreate(w http.ResponseWriter, r *http.Request) {
