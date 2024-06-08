@@ -5,11 +5,13 @@ import (
 	"html/template"
 	"log/slog"
 	"net/http"
+	"snippetbox.splice.academy/internal/models"
 	"strconv"
 )
 
 type application struct {
-	logger *slog.Logger
+	logger   *slog.Logger
+	snippets *models.SnippetModel
 }
 
 func (app *application) snippetCreatPost(w http.ResponseWriter, r *http.Request) {

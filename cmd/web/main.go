@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"snippetbox.splice.academy/internal/models"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -23,8 +24,10 @@ func main() {
 		os.Exit(1)
 	}
 	defer db.Close()
+
 	app := &application{
-		logger: logger,
+		logger:   logger,
+		snippets: &models.SnippetModel{DB: db},
 	}
 
 	logger.Info("starting server", "addr", *addr)
