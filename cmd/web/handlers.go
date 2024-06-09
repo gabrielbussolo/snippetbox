@@ -3,25 +3,17 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
-	"log/slog"
 	"net/http"
 	"snippetbox.splice.academy/internal/models"
 	"snippetbox.splice.academy/internal/validator"
 	"strconv"
 )
 
-type application struct {
-	logger        *slog.Logger
-	snippets      *models.SnippetModel
-	templateCache map[string]*template.Template
-}
-
 type snippetCreateForm struct {
-	Title   string
-	Content string
-	Expires int
-	validator.Validator
+	Title               string `form:"title"`
+	Content             string `form:"content"`
+	Expires             int    `form:"expires"`
+	validator.Validator `form:"-"`
 }
 
 func (app *application) snippetCreatPost(w http.ResponseWriter, r *http.Request) {
@@ -31,16 +23,11 @@ func (app *application) snippetCreatPost(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
+	var form snippetCreateForm
+	err = app.formDecoder.Decode(&form, r.PostForm)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
-	}
-
-	form := snippetCreateForm{
-		Title:   r.PostForm.Get("title"),
-		Content: r.PostForm.Get("content"),
-		Expires: expires,
 	}
 
 	form.CheckField(validator.NotBlank(form.Title), "title", "This field cannot be blank")
