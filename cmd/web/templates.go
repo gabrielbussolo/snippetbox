@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"net/http"
 	"path/filepath"
 	"snippetbox.splice.academy/internal/models"
 	"time"
@@ -12,6 +13,12 @@ type templateData struct {
 	Snippets    []models.Snippet
 	CurrentYear int
 	Form        any
+	Flash       string
+}
+
+func (app *application) newTemplateData(r *http.Request) templateData {
+	return templateData{CurrentYear: time.Now().Year(),
+		Flash: app.sessionManager.PopString(r.Context(), "flash")}
 }
 
 func humanDate(t time.Time) string {
