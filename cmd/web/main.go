@@ -25,7 +25,6 @@ type application struct {
 }
 
 func main() {
-
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	dsn := flag.String("dsn", "web:passwd@/snippetbox?parseTime=true", "MySQL data source name")
 	flag.Parse()
@@ -48,6 +47,7 @@ func main() {
 	sessionManager := scs.New()
 	sessionManager.Store = mysqlstore.New(db)
 	sessionManager.Lifetime = 12 * time.Hour
+	sessionManager.Cookie.Secure = true
 	app := &application{
 		logger:         logger,
 		snippets:       &models.SnippetModel{DB: db},
@@ -63,7 +63,7 @@ func main() {
 	}
 
 	logger.Info("starting server", "addr", srv.Addr)
-	err = srv.ListenAndServe()
+	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 	logger.Error(err.Error())
 	os.Exit(1)
 }
